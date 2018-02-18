@@ -1,6 +1,9 @@
+//
 const express = require('express')
 const _ = require('lodash')
 const pluralize = require('pluralize')
+
+// write, full url, util, delay
 const write = require('./write')
 const getFullURL = require('./get-full-url')
 const utils = require('../utils')
@@ -13,12 +16,20 @@ module.exports = (db, name, opts) => {
 
   // Embed function used in GET /name and GET /name/id
   function embed(resource, e) {
+    // ext resource
     e &&
+      // Each external resource
+      // concat each ext resource
       [].concat(e).forEach(externalResource => {
+        // db use ext res name's value
         if (db.get(externalResource).value) {
+          // ask
           const query = {}
+          // Build single res based on name
           const singularResource = pluralize.singular(name)
+          // ask[single_res.xyz] = res_id
           query[`${singularResource}${opts.foreignKeySuffix}`] = resource.id
+          // res[ext_res] = db.get(ext_res).filter.value
           resource[externalResource] = db
             .get(externalResource)
             .filter(query)
@@ -29,11 +40,17 @@ module.exports = (db, name, opts) => {
 
   // Expand function used in GET /name and GET /name/id
   function expand(resource, e) {
+    // in res
     e &&
+      // each in res, concat
       [].concat(e).forEach(innerResource => {
+        // in res plural
         const plural = pluralize(innerResource)
+        // db has plural's value
         if (db.get(plural).value()) {
+          // in_res.xyz
           const prop = `${innerResource}${opts.foreignKeySuffix}`
+          // res[in_res] = db.get().get_by_id(res).value..
           resource[innerResource] = db
             .get(plural)
             .getById(resource[prop])
@@ -48,21 +65,36 @@ module.exports = (db, name, opts) => {
   // GET /name?_end=&
   // GET /name?_start=&_end=&
   // GET /name?_embed=&_expand=
+  // request, resource, next
   function list(req, res, next) {
     // Resource chain
+    // Name is from very top
     let chain = db.get(name)
 
     // Remove q, _start, _end, ... from req.query to avoid filtering using those
     // parameters
+
+    // req.query.q
     let q = req.query.q
+    // start
     let _start = req.query._start
+    // end
     let _end = req.query._end
+    // page
     let _page = req.query._page
+
+    // sort
     let _sort = req.query._sort
+    // order
     let _order = req.query._order
+    // limit
     let _limit = req.query._limit
+    // embed
     let _embed = req.query._embed
+    // expend
     let _expand = req.query._expand
+
+    // remove them to avoid confusion
     delete req.query.q
     delete req.query._start
     delete req.query._end

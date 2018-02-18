@@ -1,5 +1,6 @@
 const _ = require('lodash')
 
+// data as obj
 function validateKey(key) {
   if (key.indexOf('/') !== -1) {
     const msg = [

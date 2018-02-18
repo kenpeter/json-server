@@ -1,5 +1,7 @@
+//
 const pause = require('connect-pause')
 
+// Use deplay time
 module.exports = function delay(req, res, next) {
   // NOTE: for some reason unknown to me, if the default is 0, the tests seems to add 2 seconds
   // NOTE: to each test, a default value of 1 does not seem to be effected by that issue

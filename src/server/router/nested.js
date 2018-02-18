@@ -1,11 +1,14 @@
+//
 const express = require('express')
 const pluralize = require('pluralize')
 const delay = require('./delay')
 
 module.exports = opts => {
+  // router with delay
   const router = express.Router()
   router.use(delay)
 
+  // get, res/id/obj
   // Rewrite URL (/:resource/:id/:nested -> /:nested) and request query
   function get(req, res, next) {
     const prop = pluralize.singular(req.params.resource)
@@ -14,6 +17,7 @@ module.exports = opts => {
     next()
   }
 
+  // post, res/id/obj
   // Rewrite URL (/:resource/:id/:nested -> /:nested) and request body
   function post(req, res, next) {
     const prop = pluralize.singular(req.params.resource)
@@ -22,6 +26,7 @@ module.exports = opts => {
     next()
   }
 
+  // Return
   return router
     .get('/:resource/:id/:nested', get)
     .post('/:resource/:id/:nested', post)
